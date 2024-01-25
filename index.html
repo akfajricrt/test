@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Earth with Marked Locations</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // Inisialisasi Three.js
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Mengatur bola bumi
+    const geometry = new THREE.SphereGeometry(5, 32, 32);
+    const textureLoader = new THREE.TextureLoader();
+    const texture = textureLoader.load('https://threejsfundamentals.org/threejs/resources/images/wall.jpg');
+    const material = new THREE.MeshBasicMaterial({ map: texture });
+    const earth = new THREE.Mesh(geometry, material);
+    scene.add(earth);
+
+    // Menambahkan titik-titik di negara-negara 
+    const locations = [
+      { name: 'Belanda', coords: [52.3676, 4.9041] },
+      { name: 'Belgium', coords: [50.8503, 4.3517] },
+      { name: 'Jerman', coords: [51.1657, 10.4515] },
+      { name: 'Austria', coords: [47.5162, 14.5501] },
+      { name: 'Swedia', coords: [60.1282, 18.6435] },
+      { name: 'Finlandia', coords: [61.9241, 25.7482] },
+      { name: 'Norway', coords: [60.472, 8.4689] },
+      { name: 'Denmark', coords: [56.2639, 9.5018] },
+      { name: 'Inggris', coords: [55.3781, -3.436] }
+    ];
+
+    const pointGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+    const pointMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+
+    locations.forEach(location => {
+      const marker = new THREE.Mesh(pointGeometry, pointMaterial);
+      const [lat, lon] = location.coords.map(coord => THREE.Math.degToRad(coord));
+      marker.position.set(
+        Math.cos(lat) * Math.cos(lon) * 5,
+        Math.sin(lat) * 5,
+        Math.cos(lat) * Math.sin(lon) * 5
+      );
+      scene.add(marker);
+    });
+
+    // Mengatur kamera
+    camera.position.z = 15;
+
+    // Mengatur animasi
+    function animate() {
+      requestAnimationFrame(animate);
+      earth.rotation.y += 0.005;
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>
